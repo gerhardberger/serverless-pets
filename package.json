@@ -1,0 +1,25 @@
+{
+  "name": "serverless-pets",
+  "version": "1.0.0",
+  "description": "pets that don't have servers",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava -s"
+  },
+  "author": "@gellerthegyi",
+  "license": "MIT",
+  "devDependencies": {
+    "ava": "^0.19.1",
+    "serverless-plugin-optimize": "^2.0.1-rc.1"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.48.0",
+    "hat": "0.0.3",
+    "joi": "^10.4.1"
+  },
+  "ava": {
+    "files": [
+      "**/*/test.js"
+    ]
+  }
+}

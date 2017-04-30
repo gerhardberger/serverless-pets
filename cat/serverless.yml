@@ -1,0 +1,79 @@
+service: cat
+
+plugins:
+  - serverless-plugin-optimize
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: dev
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:us-east-1:*:*"
+  package:
+    individually: true
+
+functions:
+  createCat:
+    handler: handler.create
+    events:
+      - http:
+          path: cat
+          method: post
+          cors: true
+  listCat:
+    handler: handler.list
+    events:
+      - http:
+          path: cat
+          method: get
+          cors: true
+  findCat:
+    handler: handler.find
+    events:
+      - http:
+          path: cat/{id}
+          method: get
+          cors: true
+  updateCat:
+    handler: handler.update
+    events:
+      - http:
+          path: cat/{id}
+          method: put
+          cors: true
+  deleteCat:
+    handler: handler.deleteOne
+    events:
+      - http:
+          path: cat/{id}
+          method: delete
+          cors: true
+
+resources:
+  Resources:
+    CatsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: 'Cats'

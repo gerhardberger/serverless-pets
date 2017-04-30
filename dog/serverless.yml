@@ -1,0 +1,79 @@
+service: dog
+
+plugins:
+  - serverless-plugin-optimize
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: dev
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:us-east-1:*:*"
+  package:
+    individually: true
+
+functions:
+  createDog:
+    handler: handler.create
+    events:
+      - http:
+          path: dog
+          method: post
+          cors: true
+  listDog:
+    handler: handler.list
+    events:
+      - http:
+          path: dog
+          method: get
+          cors: true
+  findDog:
+    handler: handler.find
+    events:
+      - http:
+          path: dog/{id}
+          method: get
+          cors: true
+  updateDog:
+    handler: handler.update
+    events:
+      - http:
+          path: dog/{id}
+          method: put
+          cors: true
+  deleteDog:
+    handler: handler.deleteOne
+    events:
+      - http:
+          path: dog/{id}
+          method: delete
+          cors: true
+
+resources:
+  Resources:
+    CatsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: 'Dogs'
